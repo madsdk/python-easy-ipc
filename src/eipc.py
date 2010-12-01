@@ -1,6 +1,6 @@
 # An IPC handler that allows you to work with IPC through simple
 # function calls instead of having to define some
-# statemachine/protocol.
+# state machine/protocol.
 
 from __future__ import with_statement
 from threading import Thread
@@ -9,13 +9,6 @@ from multiprocessing import Pipe, Process
 from types import FunctionType, StringType, MethodType
 from functools import partial
 
-def eipc_pair():
-    in_x, out_y = Pipe()
-    out_x, in_y = Pipe()
-    x = EIPC(in_x, out_x)
-    y = EIPC(in_y, out_y)
-    return (x, y)
-
 class EIPC(Thread):
     """The Extended/Easy IPC handler."""
     
@@ -23,9 +16,9 @@ class EIPC(Thread):
 
     def __init__(self, pipe_in, pipe_out):
         """
-        @type pipe_in: multiprocessing.Connection
+        @type pipe_in: multiprocessing.Pipe
         @param pipe_in: The pipe used to receive data.
-        @type pipe_out: multiprocessing.Connection
+        @type pipe_out: multiprocessing.Pipe
         @param pipe_out: The pipe used to send data.
         """
         super(EIPC, self).__init__()
@@ -34,6 +27,14 @@ class EIPC(Thread):
         self._pipe_out_lock = allocate_lock()
         self._shutdown = False
         self._functions = {}
+
+    @classmethod
+    def eipc_pair(cls):
+        in_x, out_y = Pipe()
+        out_x, in_y = Pipe()
+        x = cls(in_x, out_x)
+        y = cls(in_y, out_y)
+        return (x, y)
     
     def register_function(self, function, name = ''):
         # Do simple type checking.
@@ -108,7 +109,7 @@ class EIPC(Thread):
 
 class EIPCProcess(Process):
     """
-    A process wrapper with builtin support for EIPC communication.
+    A process wrapper with built-in support for EIPC communication.
     This process will do all its work through IPC calls, i.e., its
     run method does nothing by itself, it merely serves the IPC.
     """
