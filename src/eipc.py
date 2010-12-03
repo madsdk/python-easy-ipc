@@ -89,7 +89,7 @@ class EIPC(Thread):
             if rcode == 'ok':
                 return result
             elif rcode == 'error':
-                raise Exception('Remote error -> %s'%result)
+                raise Exception('Remote error -> %s (calling %s)'%(result, function_name))
                 
     def __nonzero__(self):
         return True
