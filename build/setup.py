@@ -6,5 +6,5 @@ setup(name='Python Easy IPC Library',
       author='Mads D. Kristensen',
       author_email='madsk@cs.au.dk',
       url='https://github.com/madsdk/python-easy-ipc',
-      modules=['eipc']
+      py_modules=['eipc']
 )
